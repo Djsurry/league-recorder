@@ -1,0 +1,3 @@
+selenium
+screen_recorder_sdk
+numpy
