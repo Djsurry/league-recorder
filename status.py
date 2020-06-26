@@ -1,4 +1,4 @@
-import os, time
+import os, time, psutil
 from selenium import webdriver, common
 from selenium.webdriver.common.keys import Keys  
 from selenium.webdriver.chrome.options import Options  
@@ -52,11 +52,11 @@ def in_game(region, ign):
 	return b.start(region, ign)
 
 def league_open():
-	import psutil    
-	"league" in (p.name() for p in psutil.process_iter())
+	return "League of Legends.exe" in (p.name() for p in psutil.process_iter())
 
 
 if __name__ == "__main__":
-	b = Browser()
-	print(b.start('na', 'buzzlightyear99'))
+	# b = Browser()
+	# print(b.start('na', 'buzzlightyear99'))
+	print(league_open())
 
