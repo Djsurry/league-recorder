@@ -52,7 +52,13 @@ def in_game(region, ign):
 	return b.start(region, ign)
 
 def league_open():
-	return "League of Legends.exe" in (p.name() for p in psutil.process_iter())
+	procs = []
+	for p in list(psutil.process_iter()):
+		try:
+			procs.append(p.name())
+		except psutil.AccessDenied:
+			continue
+	return "League of Legends.exe" in procs
 
 
 if __name__ == "__main__":
