@@ -11,7 +11,7 @@ RUNNING FTP SERVICE. brew services stop pure-ftpd
 
 
 
-record_cmd = 'ffmpeg -f gdigrab -framerate 10 -i desktop {out}'
+record_cmd = 'ffmpeg -f gdigrab -framerate 10 -i title="League of Legends" {out}'
 compress_cmd = 'ffmpeg -i {inp} -vcodec libx265 -crf 28 {out}'
 
 
@@ -28,7 +28,7 @@ class Recorder:
     def stop(self):
         if self.process is not None:
             resp = self.process.communicate(input=b'q')
-        else
+        else:
             return
         
         if not path.exists("temp.mp4"):
