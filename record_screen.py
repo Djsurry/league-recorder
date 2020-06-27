@@ -1,5 +1,5 @@
 from subprocess import Popen, PIPE, STDOUT
-from os import path
+from os import path, getcwd
 import time, datetime
 '''
 #########
@@ -23,7 +23,7 @@ class Recorder:
 
     def start(self):
         
-        self.process = Popen(record_cmd.format(out=path.abspath(os.getcwd()) + "\\temp.mp4").split(), stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+        self.process = Popen(record_cmd.format(out=path.abspath(getcwd()) + "\\temp.mp4").split(), stdout=PIPE, stdin=PIPE, stderr=STDOUT)
 
     def stop(self):
         name = f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S}"
