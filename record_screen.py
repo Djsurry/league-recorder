@@ -37,7 +37,7 @@ class Recorder:
             return
         l = compress_cmd.split()
         print(l)
-        l = l.append('"' + self.path + '\\' + name + ".mp4" + '"')
+        l.append('"' + self.path + '\\' + name + ".mp4" + '"')
         print(l)
         p = Popen(l)
         p.communicate()
