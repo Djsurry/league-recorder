@@ -35,7 +35,9 @@ class Recorder:
         if not path.exists("temp.mp4"):
             print('Something went wrong - Recording failed')
             return
-        l = compress_cmd.split().append('"' + self.path + '\\' + name + ".mp4" + '"')
+        l = compress_cmd.split()
+        print(l)
+        l = l.append('"' + self.path + '\\' + name + ".mp4" + '"')
         print(l)
         p = Popen(l)
         p.communicate()
