@@ -19,7 +19,7 @@ class Recorder:
     def __init__(self, folder):
         self.process = None
         self.path = pathlib.Path(folder)
-        
+        print(self.path)
 
     def start(self):
         
@@ -38,7 +38,7 @@ class Recorder:
         l = compress_cmd.split()
 
         l.append(f'"{str(self.path / name)}"')
-        
+        print(l[-1])
         p = Popen(l)
         p.communicate()
         if not pathlib.Path(self.path / name).is_file():
