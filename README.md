@@ -3,7 +3,7 @@ Records league and synchs files with a remote machine, so I can watch vods in be
 
 usage:
 
-python main.py </path/to/vods_folder>
+python main.py <ign> <C:/path/to/vods_folder>
 
 Options:
 - `-s <host> <user> <password> <destination path>`: Enable synching with remote `user@host`, saving files to the destination path with scp.

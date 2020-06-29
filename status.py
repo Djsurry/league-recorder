@@ -49,7 +49,11 @@ class Browser:
 
 def in_game(region, ign):
 	b = Browser()
-	return b.start(region, ign)
+	mode = b.start(region, ign)
+	if mode in ['Ranked Solo', 'Ranked Flex']:
+		return True
+	else:
+		return False
 
 def league_open():
 	procs = []
