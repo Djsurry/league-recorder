@@ -51,7 +51,7 @@ class Recorder:
             return
         t = str(pathlib.Path.cwd() / 'temp.mp4')
         print(f'trying to delete {t}')
-        p = Popen(['del', str(pathlib.Path.cwd() / 'temp.mp4')])
+        pathlib.Path.unlink(t)
         return name
             
 if __name__ == "__main__":
