@@ -42,7 +42,7 @@ class Recorder:
             return
         l = compress_cmd.split()
         
-        l.append(f'`{str(self.path / name)}`')
+        l.append(f'{str(self.path / name)}')
         print(f"CMD: {l}")
         p = Popen(l)
         p.communicate()
