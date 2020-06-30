@@ -36,7 +36,9 @@ class Recorder:
             print('Something went wrong - Recording failed')
             return
         l = compress_cmd.split()
-
+        print(type(self.path / name))
+        print(str(self.path))
+        print(str(self.path / name))
         l.append(f'"{str(self.path / name)}"')
         print(l[-1])
         p = Popen(l)
@@ -47,5 +49,9 @@ class Recorder:
         p = Popen(['del', 'temp.mp4'])
         return name
             
-
+if __name__ == "__main__":
+    r = Recorder("/Users/djsur/vods")
+    r.start()
+    time.sleep(2)
+    r.stop()
 
