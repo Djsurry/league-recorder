@@ -49,7 +49,7 @@ class Recorder:
         if not pathlib.Path(self.path / name).is_file():
             print("Something went wrong - Compression Failed")
             return
-        p = Popen(['del', 'temp.mp4'])
+        p = Popen(['del', str(pathlib.Path.cwd() / 'temp.mp4')])
         return name
             
 if __name__ == "__main__":
