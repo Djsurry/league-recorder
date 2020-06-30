@@ -45,7 +45,7 @@ class Recorder:
         l.append(f'{str(self.path / name)}')
         print(f"CMD: {l}")
         p = Popen(l)
-        p.communicate()
+        p.wait()
         if not pathlib.Path(self.path / name).is_file():
             print("Something went wrong - Compression Failed")
             return

@@ -78,13 +78,16 @@ def loop():
 			r.start()
 			ig = True
 		else:
-			if not league:
+			if not league_open():
+				print("LEAGUE CLOSED")
 				f = r.stop()
+				print("FINISHED r.stop()")
 				if args['syncing']:
 					transfer(args['remote'], f, args['host'], args['user'], args['password'])
+				ig = False
 
 if __name__ == "__main__":
-	print(args)
+	loop()
 
 
 
