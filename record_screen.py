@@ -1,5 +1,5 @@
 from subprocess import Popen, PIPE, STDOUT
-import time, datetime, pathlib
+import time, datetime, pathlib, re
 '''
 #########
 
@@ -7,6 +7,7 @@ RUNNING FTP SERVICE. brew services stop pure-ftpd
 
 #########
 '''
+
 
 
 
@@ -26,7 +27,11 @@ class Recorder:
         self.process = Popen(record_cmd.format(out=pathlib.Path.cwd() / "temp.mp4").split(), stdout=PIPE, stdin=PIPE, stderr=STDOUT)
 
     def stop(self):
-        name = f"{datetime.datetime.now():%H:%M:%S}.mp4"
+        
+        pattern = re.compile(f"{datetime.datetime.now():%Y-%m-%d}" + r' \d+.mp4')
+        file_list = [n for n in self.path.iterdir() if pattern.match(n.name)]
+
+        name = f"{datetime.datetime.now():%Y-%m-%d}" + f" {len(file_list)+1}" ".mp4"
         if self.process is not None:
             resp = self.process.communicate(input=b'q')
         else:
@@ -36,11 +41,9 @@ class Recorder:
             print('Something went wrong - Recording failed')
             return
         l = compress_cmd.split()
-        print(type(self.path / name))
-        print(str(self.path))
-        print(str(self.path / name))
+        
         l.append(f'"{str(self.path / name)}"')
-        print(l[-1])
+        
         p = Popen(l)
         p.communicate()
         if not pathlib.Path(self.path / name).is_file():
