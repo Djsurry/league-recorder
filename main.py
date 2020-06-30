@@ -1,22 +1,18 @@
 from transfer import transfer
 from record_screen import Recorder
 from status import in_game, league_open
-import sys, pathlib, time
-
-# TODO
-#     1. Check return code of scp to check sucess or not
-#     2. Add second thread running to send vods
+import sys, pathlib, time, threading
 
 
 def parseargs(args):
-	if len(args) < 1 or len(args) > 9:
+	if len(args) < 1 or len(args) > 10:
 		print('[0x01]: Incorrect usage. Use -h for help')
 		exit(1)
 
 	if '-h' in args:
 		print('Usage: python recorder.py <path to vods foler>')
 		print('Options:')
-		print('        -r <ign>: enables recording and saving of only ranked games')
+		print('        -r <ign> <region>: enables recording and saving of only ranked games')
 		print('        -s <host> <user> <pswd> <path to remote folder>: enables syncing')
 		exit(0)
 
@@ -40,8 +36,13 @@ def parseargs(args):
 			else:
 				print('[0x04]: Incorrect usage. Use -h for help')
 				exit(1)
+			if '-' not in args[index+2]:
+				arg_dict['region'] = args[index+2]
+			else:
+				print('[0x05]: Incorrect usage. Use -h for help')
+				exit(1)
 		except IndexError:
-			print('[0x05]: Incorrect usage. Use -h for help')
+			print('[0x06]: Incorrect usage. Use -h for help')
 			exit(1)
 
 	arg_dict['syncing'] = '-s' in args
@@ -53,17 +54,29 @@ def parseargs(args):
 			arg_dict['password'] = args[index + 3]
 			arg_dict['remote'] = args[index + 4]
 			if '-' in args[index + 1] or '-' in args[index + 2] or '-' in args[index + 3] or '-' in args[index + 4]:
-				print('[0x06]: Incorrect usage. Use -h for help')
+				print('[0x07]: Incorrect usage. Use -h for help')
 				exit(1)
 		except IndexError:
-			print('[0x07]: Incorrect usage. Use -h for help')
+			print('[0x08]: Incorrect usage. Use -h for help')
 			exit(1)	
 	
 	return arg_dict
 
 args = parseargs(sys.argv[1:])
+def handle_sync(path, dest, host, user, pswd):
+	sent_files = []
+	while True:
+		all_files = [n for n in path.iterdir()]
+		for f in all_files:
+			if f in sent_files:
+				continue
+			if transfer(remote, f, host, user, pswd) == 0:
+				sent_files.append(f)
+		time.sleep(2)
+
 
 def loop():
+
 	r = Recorder(args['path'])
 	ig = False
 	while True:
@@ -82,11 +95,12 @@ def loop():
 				print("LEAGUE CLOSED")
 				f = r.stop()
 				print("FINISHED r.stop()")
-				if args['syncing']:
-					transfer(args['remote'], f, args['host'], args['user'], args['password'])
 				ig = False
 
 if __name__ == "__main__":
+	if args['syncing']:
+		t = threading.Thread(target=handle_sync, args=(args['path'], args['remote'], args['host'], args['user'], args['password'],), daemon=True)
+		t.start()
 	loop()
 
 
