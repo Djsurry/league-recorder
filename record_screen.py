@@ -26,7 +26,7 @@ class Recorder:
         self.process = Popen(record_cmd.format(out=pathlib.Path.cwd() / "temp.mp4").split(), stdout=PIPE, stdin=PIPE, stderr=STDOUT)
 
     def stop(self):
-        name = f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S}.mp4"
+        name = f"{datetime.datetime.now():%Y-%m-%d}.mp4"
         if self.process is not None:
             resp = self.process.communicate(input=b'q')
         else:
