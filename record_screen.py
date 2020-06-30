@@ -28,10 +28,10 @@ class Recorder:
 
     def stop(self):
         
-        pattern = re.compile(f"{datetime.datetime.now():%Y-%m-%d}" + r' \d+.mp4')
+        pattern = re.compile(f"{datetime.datetime.now():%Y-%m-%d}" + r'_\d+.mp4')
         file_list = [n for n in self.path.iterdir() if pattern.match(n.name)]
 
-        name = f"{datetime.datetime.now():%Y-%m-%d}" + f" {len(file_list)+1}" ".mp4"
+        name = f"{datetime.datetime.now():%Y-%m-%d}" + f"_{len(file_list)+1}" ".mp4"
         if self.process is not None:
             resp = self.process.communicate(input=b'q')
         else:
