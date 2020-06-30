@@ -49,6 +49,8 @@ class Recorder:
         if not pathlib.Path(self.path / name).is_file():
             print("Something went wrong - Compression Failed")
             return
+        t = str(pathlib.Path.cwd() / 'temp.mp4')
+        print(f'trying to delete {t}')
         p = Popen(['del', str(pathlib.Path.cwd() / 'temp.mp4')])
         return name
             
