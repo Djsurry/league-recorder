@@ -10,7 +10,7 @@ def parseargs(args):
 		exit(1)
 
 	if '-h' in args:
-		print('Usage: python recorder.py <path to vods foler>')
+		print('Usage: python main.py <path to vods foler>')
 		print('Options:')
 		print('        -r <ign> <region>: enables recording and saving of only ranked games')
 		print('        -s <host> <user> <pswd> <path to remote folder>: enables syncing')
@@ -72,18 +72,22 @@ class Syncer(threading.Thread):
 		self.user = user
 		self.pswd = pswd
 		self.sent_files = s
+		print(s)
 		self.running = True
 	def run(self):
 		while self.running:
-			all_files = [n for n in self.path.iterdir() and n.name != log]
+			all_files = [n for n in self.path.iterdir() if n.name != log]
+			print(f"all: {all_files}")
 			for f in all_files:
 				if f in self.sent_files:
 					continue
-				if transfer(self.remote, f, self.host, self.user, self.pswd) == 0:
+				print(f"sending {f}")
+				if transfer(self.dest, f,  self.user, self.pswd, self.host) == 0:
 					self.sent_files.append(f)
 			time.sleep(2)
+		print(self.sent_files)
 		with open(self.path / log, 'w') as f:
-			f.write('\n'.join(sent_files))
+			f.write('\n'.join([str(n) for n in self.sent_files if n != '']))
 
 	def stop(self):
 		self.running = False
@@ -100,7 +104,7 @@ def init(path):
 	if log_file.exists():
 		with open(log_file) as f:
 			lines = f.read()
-			return lines.split('\n')
+			return [pathlib.Path(n) for n in lines.split('\n')]
 	else:
 		log_file.touch()
 		return []
@@ -129,7 +133,7 @@ def loop(args):
 if __name__ == "__main__":
 
 	args = parseargs(sys.argv[1:])
-	s = init()
+	s = init(args['path'])
 	f = None
 	if args['syncing']:
 		f = Syncer(args['path'], args['remote'], args['host'], args['user'], args['password'],s)
