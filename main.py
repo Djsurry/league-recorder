@@ -3,7 +3,7 @@ from record_screen import Recorder
 from status import in_game, league_open
 import sys, pathlib, time, threading
 
-
+log = ".vodlogger"
 def parseargs(args):
 	if len(args) < 1 or len(args) > 10:
 		print('[0x01]: Incorrect usage. Use -h for help')
@@ -63,21 +63,51 @@ def parseargs(args):
 	return arg_dict
 
 
-def handle_sync(path, dest, host, user, pswd):
-	sent_files = []
-	while True:
-		all_files = [n for n in path.iterdir()]
-		print(all_files)
-		for f in all_files:
-			if f in sent_files:
-				continue
-			if transfer(dest, f, user, pswd, host=host) == 0:
-				sent_files.append(f)
-		time.sleep(2)
+class Syncer(threading.Thread):
+	def __init__(self, path, dest, host, user, pswd, s):
+		super().__init__()
+		self.path = path
+		self.dest = dest
+		self.host = host
+		self.user = user
+		self.pswd = pswd
+		self.sent_files = s
+		self.running = True
+	def run(self):
+		while self.running:
+			all_files = [n for n in self.path.iterdir() and n.name != log]
+			for f in all_files:
+				if f in self.sent_files:
+					continue
+				if transfer(self.remote, f, self.host, self.user, self.pswd) == 0:
+					self.sent_files.append(f)
+			time.sleep(2)
+		with open(self.path / log, 'w') as f:
+			f.write('\n'.join(sent_files))
+
+	def stop(self):
+		self.running = False
 
 
-def loop():
+def init(path):
+	if path.exists() and not path.is_dir():
+		print(f"[0x09]: {f} is not a directory")
+		exit(1)
+	elif not path.exists():
+		if input(f"Do you want to create {path}? (y or n)").lower() == "y":
+			path.mkdir(parents=True)
+	log_file = path / log
+	if log_file.exists():
+		with open(log_file) as f:
+			lines = f.read()
+			return lines.split('\n')
+	else:
+		log_file.touch()
+		return []
+	
 
+
+def loop(args):
 	r = Recorder(args['path'])
 	ig = False
 	while True:
@@ -93,18 +123,24 @@ def loop():
 			ig = True
 		else:
 			if not league_open():
-				print("LEAGUE CLOSED")
 				f = r.stop()
-				print("FINISHED r.stop()")
 				ig = False
 
 if __name__ == "__main__":
-	args = parseargs(sys.argv[1:])
-	#if args['syncing']:
-	#	t = threading.Thread(target=handle_sync, args=(args['path'], args['remote'], args['host'], args['user'], args['password'],), daemon=True)
-	#	t.start()
-	#loop()
-	handle_sync(args['path'], args['remote'], args['host'], args['user'], args['password'])
 
+	args = parseargs(sys.argv[1:])
+	s = init()
+	f = None
+	if args['syncing']:
+		f = Syncer(args['path'], args['remote'], args['host'], args['user'], args['password'],s)
+		f.start()
+
+	try:
+		loop(args)
+	except KeyboardInterrupt:
+		if f is not None:
+			f.stop()
+			f.join()
+	
 
 
