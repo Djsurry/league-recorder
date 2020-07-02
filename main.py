@@ -62,15 +62,16 @@ def parseargs(args):
 	
 	return arg_dict
 
-args = parseargs(sys.argv[1:])
+
 def handle_sync(path, dest, host, user, pswd):
 	sent_files = []
 	while True:
 		all_files = [n for n in path.iterdir()]
+		print(all_files)
 		for f in all_files:
 			if f in sent_files:
 				continue
-			if transfer(remote, f, host, user, pswd) == 0:
+			if transfer(dest, f, user, pswd, host=host) == 0:
 				sent_files.append(f)
 		time.sleep(2)
 
@@ -98,11 +99,12 @@ def loop():
 				ig = False
 
 if __name__ == "__main__":
-	if args['syncing']:
-		t = threading.Thread(target=handle_sync, args=(args['path'], args['remote'], args['host'], args['user'], args['password'],), daemon=True)
-		t.start()
-	loop()
-
+	args = parseargs(sys.argv[1:])
+	#if args['syncing']:
+	#	t = threading.Thread(target=handle_sync, args=(args['path'], args['remote'], args['host'], args['user'], args['password'],), daemon=True)
+	#	t.start()
+	#loop()
+	handle_sync(args['path'], args['remote'], args['host'], args['user'], args['password'])
 
 
 
